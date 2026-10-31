@@ -51,11 +51,11 @@ Interface
 
   TExeVersionInfoHelper = Record Helper For TExeVersionInfo
     Function CompareTo(
-      Const aOther: TExeVersionInfo
+      Const aOther: TExeVersionInfo; Const Force : Boolean = False
     ): TVersionComparison;
 
     Class Function Compare(
-      Const A, B: TExeVersionInfo
+      Const A, B: TExeVersionInfo; Const Force : Boolean = False
     ): TVersionComparison; Static;
   End;
 
@@ -155,7 +155,7 @@ Implementation
   End;
 
  Function TExeVersionInfoHelper.CompareTo(
-  Const aOther: TExeVersionInfo): TVersionComparison;
+  Const aOther: TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
   Begin
    Result := vcUnknown;
    If Not (Self.Available And aOther.Available) Then
@@ -164,10 +164,13 @@ Implementation
     Exit;
    If Not (Self.InternalName = aOther.InternalName) Then
     Exit;
-   If Not (Self.CompanyName = aOther.CompanyName) Then
-    Exit;
-   If Not (Self.ProductName = aOther.ProductName) Then
-    Exit;
+   If Not Force Then
+    Begin
+    If Not (Self.CompanyName = aOther.CompanyName) Then
+     Exit;
+    If Not (Self.ProductName = aOther.ProductName) Then
+     Exit;
+    End;
    // Porównanie czterech składników wersji
    If Self.Major = aOther.Major Then
     Begin
@@ -199,9 +202,9 @@ Implementation
   End;
 
  Class Function TExeVersionInfoHelper.Compare(
-  Const A, B: TExeVersionInfo): TVersionComparison;
+  Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
   Begin 
-   Result := A.CompareTo(B);
+   Result := A.CompareTo(B, Force);
   End;
 
 Initialization
