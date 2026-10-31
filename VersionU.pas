@@ -47,6 +47,18 @@ Interface
     CFBundleName     : String;
   End;
 
+  TVersionComparison = (vcOlder, vcEqual, vcNewer, vcUnknown);
+
+  TExeVersionInfoHelper = Record Helper For TExeVersionInfo
+    Function CompareTo(
+      Const aOther: TExeVersionInfo
+    ): TVersionComparison;
+
+    Class Function Compare(
+      Const A, B: TExeVersionInfo
+    ): TVersionComparison; Static;
+  End;
+
  Function ReadVersionInfo(Const FileName : String) : TExeVersionInfo;
  Function ExeVersionInfo : TExeVersionInfo;
 
@@ -140,6 +152,56 @@ Implementation
  Function ExeVersionInfo : TExeVersionInfo;
   Begin
    Result := ReadVersionInfo(ParamStr(0));
+  End;
+
+ Function TExeVersionInfoHelper.CompareTo(
+  Const aOther: TExeVersionInfo): TVersionComparison;
+  Begin
+   Result := vcUnknown;
+   If Not (Self.Available And aOther.Available) Then
+    Exit;
+   If Not (Self.OriginalFilename = OriginalFilename) Then
+    Exit;
+   If Not (Self.InternalName = aOther.InternalName) Then
+    Exit;
+   If Not (Self.CompanyName = aOther.CompanyName) Then
+    Exit;
+   If Not (Self.ProductName = aOther.ProductName) Then
+    Exit;
+   // Porównanie czterech składników wersji
+   If Self.Major = aOther.Major Then
+    Begin
+     If Self.Minor = aOther.Minor Then
+      Begin
+       If Self.Release = aOther.Release Then
+        Begin
+         If Self.Build = aOther.Build Then
+          Exit(vcEqual)
+         Else If Self.Build > aOther.Build Then
+          Exit(vcNewer)
+         Else
+          Exit(vcOlder);
+        End // Wydanie równe
+       Else If Self.Release > aOther.Release Then
+        Exit(vcNewer)
+       Else
+        Exit(vcOlder);
+      End // Poboczny równy
+     Else If Self.Minor > aOther.Minor Then
+      Exit(vcNewer)
+     Else
+      Exit(vcOlder);
+    End // Główny równy 
+   Else If Self.Major > aOther.Major Then
+    Exit(vcNewer)
+   Else
+    Exit(vcOlder);
+  End;
+
+ Class Function TExeVersionInfoHelper.Compare(
+  Const A, B: TExeVersionInfo): TVersionComparison;
+  Begin 
+   Result := A.CompareTo(B);
   End;
 
 Initialization
