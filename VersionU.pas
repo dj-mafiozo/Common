@@ -50,13 +50,8 @@ Interface
   TVersionComparison = (vcOlder, vcEqual, vcNewer, vcUnknown);
 
   TExeVersionInfoHelper = Record Helper For TExeVersionInfo
-    Function CompareTo(
-      Const aOther: TExeVersionInfo; Const Force : Boolean = False
-    ): TVersionComparison;
-
-    Class Function Compare(
-      Const A, B: TExeVersionInfo; Const Force : Boolean = False
-    ): TVersionComparison; Static;
+    Function CompareTo(Const aOther: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
+    Class Function Compare(Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison; Static;
   End;
 
  Function ReadVersionInfo(Const FileName : String) : TExeVersionInfo;
@@ -154,8 +149,7 @@ Implementation
    Result := ReadVersionInfo(ParamStr(0));
   End;
 
- Function TExeVersionInfoHelper.CompareTo(
-  Const aOther: TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
+ Function TExeVersionInfoHelper.CompareTo(Const aOther: TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
   Begin
    Result := vcUnknown;
    If Not (Self.Available And aOther.Available) Then
@@ -194,16 +188,15 @@ Implementation
       Exit(vcNewer)
      Else
       Exit(vcOlder);
-    End // Główny równy 
+    End // Główny równy
    Else If Self.Major > aOther.Major Then
     Exit(vcNewer)
    Else
     Exit(vcOlder);
   End;
 
- Class Function TExeVersionInfoHelper.Compare(
-  Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
-  Begin 
+ Class Function TExeVersionInfoHelper.Compare(Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
+  Begin
    Result := A.CompareTo(B, Force);
   End;
 
