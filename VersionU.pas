@@ -2,7 +2,7 @@
 
 {MIT License
 
-Copyright (c) 2026 dj-mafiozo
+ Copyright(c) 2026 dj-mafiozo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,9 +49,10 @@ Interface
 
   TVersionComparison = (vcOlder, vcEqual, vcNewer, vcUnknown);
 
-  TExeVersionInfoHelper = Record Helper For TExeVersionInfo
-    Function CompareTo(Const aOther: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
-    Class Function Compare(Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison; Static;
+  TExeVersionInfoHelper = Record
+   Helper For TExeVersionInfo
+   Function CompareTo(Const aOther : TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
+   Class Function Compare(Const a, b : TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison; Static;
   End;
 
  Function ReadVersionInfo(Const FileName : String) : TExeVersionInfo;
@@ -88,20 +89,20 @@ Implementation
    Function Value(Const Key : String) : String;
     Var
      Path : String;
-     J    : Integer;
+     j    : Integer;
      Pair : PTranslation;
     Begin
      Result := '';
-     For J  := 0 To Integer(TranslationLen Div SizeOf(TTranslation)) - 1 Do
+     For j  := 0 To Integer(TranslationLen Div SizeOf(TTranslation)) - 1 Do
       Begin
-       Pair := PTranslation(NativeUInt(TranslationData) + NativeUInt(J * SizeOf(TTranslation)));
+       Pair := PTranslation(NativeUInt(TranslationData) + NativeUInt(j * SizeOf(TTranslation)));
        Path := Format('\StringFileInfo\%.4x%.4x\%s', [Pair.Language, Pair.CodePage, Key]);
        If VerQueryValue(Pointer(Data), PChar(Path), TextData, Len) And (Len > 1) Then
         Exit(PChar(TextData));
       End;
-     For J := 0 To 1 Do
+     For j := 0 To 1 Do
       Begin
-       If J = 0 Then
+       If j = 0 Then
         Path := '\StringFileInfo\040904E4\' + Key
        Else
         Path := '\StringFileInfo\041504E4\' + Key;
@@ -111,7 +112,7 @@ Implementation
     End;
 
   Begin
-   Result := Default (TExeVersionInfo);
+   Result := Default(TExeVersionInfo);
    Size   := GetFileVersionInfoSize(PChar(FileName), Dummy);
    If Size = 0 Then
     Exit;
@@ -149,21 +150,21 @@ Implementation
    Result := ReadVersionInfo(ParamStr(0));
   End;
 
- Function TExeVersionInfoHelper.CompareTo(Const aOther: TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
+ Function TExeVersionInfoHelper.CompareTo(Const aOther : TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
   Begin
    Result := vcUnknown;
-   If Not (Self.Available And aOther.Available) Then
+   If Not(Self.Available And aOther.Available) Then
     Exit;
-   If Not (Self.OriginalFilename = OriginalFilename) Then
+   If Not(Self.OriginalFilename = OriginalFilename) Then
     Exit;
-   If Not (Self.InternalName = aOther.InternalName) Then
+   If Not(Self.InternalName = aOther.InternalName) Then
     Exit;
    If Not Force Then
     Begin
-    If Not (Self.CompanyName = aOther.CompanyName) Then
-     Exit;
-    If Not (Self.ProductName = aOther.ProductName) Then
-     Exit;
+     If Not(Self.CompanyName = aOther.CompanyName) Then
+      Exit;
+     If Not(Self.ProductName = aOther.ProductName) Then
+      Exit;
     End;
    // Porównanie czterech składników wersji
    If Self.Major = aOther.Major Then
@@ -195,10 +196,12 @@ Implementation
     Exit(vcOlder);
   End;
 
- Class Function TExeVersionInfoHelper.Compare(Const A, B: TExeVersionInfo; Const Force : Boolean = False): TVersionComparison;
-  Begin
-   Result := A.CompareTo(B, Force);
-  End;
+  Class Function TExeVersionInfoHelper.Compare(Const a, b : TExeVersionInfo; Const Force : Boolean = False) : TVersionComparison;
+
+Begin
+ Result := a.CompareTo(b, Force);
+
+End;
 
 Initialization
  VersionInfo := ExeVersionInfo;
