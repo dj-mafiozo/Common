@@ -200,7 +200,6 @@ Implementation
 
 Begin
  Result := a.CompareTo(b, Force);
-
 End;
 
 Initialization
